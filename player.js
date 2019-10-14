@@ -16,6 +16,7 @@ function Player (opts) {
   }
   self._initFramebuffer()
   self._initBuffers()
+  self.source = null
   self.setSource(opts.source || `
     float sample (float t) { return 0.0 }
   `)
@@ -98,6 +99,8 @@ Player.prototype.pause = function () {
 }
 
 Player.prototype.setSource = function (src) {
+  if (src === this.source) return
+  this.source = src
   var frag = this._gl.createShader(this._gl.FRAGMENT_SHADER)
   this._gl.shaderSource(frag, `
     #version 300 es

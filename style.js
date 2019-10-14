@@ -4,6 +4,7 @@ module.exports = `
     margin: 0px;
     background-color: #101;
   }
+  ${require('./ui/toggle-switch/css')}
   #topbar {
     height: 39px;
     padding-top: 3px;
@@ -30,6 +31,37 @@ module.exports = `
     margin-top: 0.4em;
     margin-left: 10px;
     font-size: 1.4em;
+  }
+  #topbar .settings {
+    float: right;
+    padding: 0px;
+    margin-right: 4px;
+    background-color: transparent;
+    border: 2px solid transparent;
+    border-radius: 8px;
+  }
+  #topbar .settings svg {
+    transition: 0.3s;
+  }
+  #topbar .settings input {
+    display: none;
+  }
+  #topbar .settings input:checked + svg {
+    transform: rotate(45deg);
+  }
+  #topbar .settings svg path {
+    stroke-width: 2px;
+    fill: #f08;
+    stroke: transparent;
+  }
+  #topbar .settings input:checked + svg path {
+    fill: #101;
+    stroke: #f08;
+  }
+  #topbar .toggle-switch.live {
+    float: right;
+    margin-right: 8px;
+    margin-top: 5px;
   }
   #codebox {
     position: absolute;
