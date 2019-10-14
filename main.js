@@ -3,7 +3,6 @@ var app = require('choo')()
 var css = require('./style.js')
 var player = require('./player.js')
 var toggleSwitch = require('./ui/toggle-switch')
-var { nextTick } = process
 
 var svg = {
   play: () => html`<svg xmlns="https://www.w3.org/2000/svg"
@@ -90,7 +89,7 @@ app.use(function (state, emitter) {
   })
 })
 
-app.route('/', function (state, emit) {
+app.route('*', function (state, emit) {
   return html`<body>
     <style>${css}</style>
     <div id="topbar">
