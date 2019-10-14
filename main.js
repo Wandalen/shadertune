@@ -35,16 +35,41 @@ var svg = {
 }
 
 app.use(function (state, emitter) {
+  state.hotkeys = {
+    play: { ctrlKey: true, code: 'Space' },
+    'live-updates': { ctrlKey: true, code: 'KeyU' },
+    'show-settings': { ctrlKey: true, code: 'Period' }
+  }
+  hotkeyUpdate()
+  emitter.on('set-hotkey', setHotkey)
+  function setHotkey (name, props) {
+    state.hotkeys[name] = props
+    hotkeyUpdate()
+  }
+  function hotkeyUpdate () {
+    state.hotkeyKeys = Object.keys(state.hotkeys)
+    state.hotkeyKeyKeys = {}
+    for (var i = 0; i < state.hotkeyKeys.length; i++) {
+      var key = state.hotkeyKeys[i]
+      state.hotkeyKeyKeys[key] = Object.keys(state.hotkeys[key])
+    }
+  }
   window.addEventListener('keydown', function (ev) {
-    if (ev.ctrlKey && ev.code === 'Space') {
-      ev.preventDefault()
-      emitter.emit('toggle-play')
-    } else if (ev.ctrlKey && ev.code === 'KeyU') {
-      ev.preventDefault()
-      emitter.emit('toggle-live-updates')
-    } else if (ev.ctrlKey && ev.code === 'Period') {
-      ev.preventDefault()
-      emitter.emit('toggle-show-settings')
+    for (var i = 0; i < state.hotkeyKeys.length; i++) {
+      var key = state.hotkeyKeys[i]
+      var match = true
+      for (var j = 0; j < state.hotkeyKeyKeys[key].length; j++) {
+        var k = state.hotkeyKeyKeys[key][j]
+        if (ev[k] !== state.hotkeys[key][k]) {
+          match = false
+          break
+        }
+      }
+      if (match) {
+        ev.preventDefault()
+        emitter.emit('toggle-' + key)
+        return
+      }
     }
   })
 })
@@ -61,6 +86,15 @@ app.use(function (state, emitter) {
   state.playing = false
   state.liveUpdates = true
   state.showSettings = false
+  state.showHotkey = null
+  emitter.on('open-hotkey', function (name) {
+    state.showHotkey = name
+    emitter.emit('render')
+  })
+  emitter.on('close-hotkey', function () {
+    state.showHotkey = null
+    emitter.emit('render')
+  })
 
   emitter.on('toggle-play', function () {
     state.playing = !state.playing
@@ -114,7 +148,8 @@ app.route('*', function (state, emit) {
       autocorrect="off" autocapitalize="off" oninput=${onCodeChange}
       >${state.code}</textarea>
     </div>
-    ${state.showSettings ? showSettings() : ''}
+    ${showSettings(state, emit)}
+    ${showHotkeys(state, emit)}
   </body>`
   function playToggle () { emit('toggle-play') }
   function liveUpdateToggle () { emit('toggle-live-updates') }
@@ -123,7 +158,109 @@ app.route('*', function (state, emit) {
 })
 app.mount(document.body)
 
-function showSettings () {
-  return html`<div id="settings">
+function showHotkeys (state, emit) {
+  return html`<div id="hotkey" class=${state.showHotkey ? 'show' : ''}>
+    <div class="content ${state.showHotkey ? 'show' : ''}">
+      <h1>hotkey for ${state.showHotkey}</h1>
+      <button>ctrl</button>
+      <button>shift</button>
+      <button>alt</button>
+      <button>meta</button>
+      <hr>
+      <button>space</button>
+      <button>\`</button>
+      <button>-</button>
+      <button>=</button>
+      <button>[</button>
+      <button>]</button>
+      <button>\\</button>
+      <button>;</button>
+      <button>'</button>
+      <button>,</button>
+      <button>.</button>
+      <button>/</button>
+      <hr>
+      <button>0</button>
+      <button>1</button>
+      <button>2</button>
+      <button>3</button>
+      <button>4</button>
+      <button>5</button>
+      <button>6</button>
+      <button>7</button>
+      <button>8</button>
+      <button>9</button>
+      <hr>
+      <button>A</button>
+      <button>B</button>
+      <button>C</button>
+      <button>D</button>
+      <button>E</button>
+      <button>F</button>
+      <button>G</button>
+      <button>H</button>
+      <button>I</button>
+      <button>J</button>
+      <button>K</button>
+      <button>L</button>
+      <button>M</button>
+      <button>N</button>
+      <button>O</button>
+      <button>P</button>
+      <button>Q</button>
+      <button>R</button>
+      <button>S</button>
+      <button>T</button>
+      <button>U</button>
+      <button>V</button>
+      <button>W</button>
+      <button>X</button>
+      <button>Y</button>
+      <button>Z</button>
+      <hr>
+      <button onclick=${close}>close</button>
+    </div>
   </div>`
+  function close () { emit('close-hotkey') }
+}
+
+function showSettings (state, emit) {
+  var tabs = { tabindex: state.showSettings ? '0' : '-1' }
+  return html`<div id="settings" class="${state.showSettings ? 'show' : ''}
+      ${state.showHotkey ? '' : 'active'}"
+    >
+    <div class="content ${state.showSettings ? 'show' : ''}">
+      <h1>settings</h1>
+      <table>
+        <tr>
+          <th>toggle play/pause</th>
+          <td>
+            <button onclick=${openKey('play')} ${tabs}>
+              [ctrl+space]
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <th>toggle live updates</th>
+          <td>
+            <button onclick=${openKey('live-updates')} ${tabs}>
+              [ctrl+u]
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <th>toggle settings view</th>
+          <td>
+            <button onclick=${openKey('show-settings')} ${tabs}>
+              [ctrl+.]
+            </button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>`
+
+  function openKey (name) {
+    return function () { emit('open-hotkey', name) }
+  }
 }
