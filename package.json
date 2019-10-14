@@ -1,9 +1,5 @@
 {
   "dependencies": {
-    "choo": "^7.0.0",
-    "glslify": "^7.0.0",
-    "hypercore": "^8.2.2",
-    "hyperdrive": "^9.16.0",
-    "regl": "^1.3.13"
+    "choo": "^7.0.0"
   }
 }

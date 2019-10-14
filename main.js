@@ -17,7 +17,7 @@ app.use(function (state, emitter) {
   state.code = `
     const float PI = ${Math.PI.toFixed(7)};
 
-    float sample (float t) {
+    float sound (float t) {
       return sin(t*2.0*PI*800.0)*0.8;
     }
   `.trim().replace(/\r?\n    /g,'\n')
