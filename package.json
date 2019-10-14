@@ -1,5 +1,11 @@
 {
   "dependencies": {
     "choo": "^7.0.0"
+  },
+  "devDependencies": {
+    "budo": "^11.6.3"
+  },
+  "scripts": {
+    "dev": "budo main.js"
   }
 }
