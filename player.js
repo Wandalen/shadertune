@@ -79,7 +79,7 @@ Player.prototype._fill = function (output) {
 
   this._gl.viewport(0, 0, SIZE/4, 1)
   this._gl.clearColor(1, 2, 3, 4)
-  this._gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+  this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT)
   this._gl.drawElements(this._gl.TRIANGLES, 3, this._gl.UNSIGNED_SHORT, 0)
 
   this._gl.readBuffer(this._gl.COLOR_ATTACHMENT0)
